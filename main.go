@@ -247,7 +247,7 @@ func demoTokenBucket(userID string) {
 	// 7 should be allowed and 1 is not allowed because:
 	// - We start with 5 tokens
 	// - We refill 0.4 tokens every 400ms (rate = 1 token/sec)
-	// - Net consumption: 1 - 0.4 = 0.6 tokens per request
+	// - Net consumption: 1 - 0.4 = 0.6 tokens per requestg
 	// - After 7 requests: 5 - (7 * 0.6) = 0.8 tokens remaining so 8th will be rejected
 	for i := 1; i <= 8; i++ {
 		allowed, _ := tokenBucketAllow(userID, capacity, rate)
