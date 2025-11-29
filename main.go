@@ -243,8 +243,13 @@ func demoTokenBucket(userID string) {
 	capacity := 5.0
 	rate := 1.0
 
-	// Test 7 requests
-	for i := 1; i <= 7; i++ {
+	// Test 8 requests with 400ms spacing
+	// 7 should be allowed and 1 is not allowed because:
+	// - We start with 5 tokens
+	// - We refill 0.4 tokens every 400ms (rate = 1 token/sec)
+	// - Net consumption: 1 - 0.4 = 0.6 tokens per request
+	// - After 7 requests: 5 - (7 * 0.6) = 0.8 tokens remaining so 8th will be rejected
+	for i := 1; i <= 8; i++ {
 		allowed, _ := tokenBucketAllow(userID, capacity, rate)
 		fmt.Printf("Request %d: %t\n", i, allowed)
 		time.Sleep(400 * time.Millisecond)
