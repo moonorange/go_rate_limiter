@@ -61,6 +61,9 @@ func fixedWindowAllow(userID string, limit int64, window time.Duration) (bool, e
 func demoFixedWindow(userID string) {
 	limit := int64(5)
 
+	// Test 7 requests
+	// The result should be true for the first 5 requests
+	// and false for the remaining 2 requests
 	for i := 1; i <= 7; i++ {
 		allowed, _ := fixedWindowAllow(userID, limit, 10*time.Second)
 		fmt.Printf("Request %d: %t\n", i, allowed)
@@ -101,6 +104,9 @@ func slidingLogAllow(userID string, limit int64, window time.Duration) (bool, er
 func demoSlidingLog(userID string) {
 	limit := int64(5)
 
+	// Test 7 requests
+	// The result should be true for the first 5 requests
+	// and false for the remaining 2 requests
 	for i := 1; i <= 7; i++ {
 		allowed, _ := slidingLogAllow(userID, limit, 2*time.Second)
 		fmt.Printf("Request %d: %t\n", i, allowed)
@@ -154,11 +160,29 @@ func slidingCounterAllow(userID string, limit int64, window time.Duration) (bool
 
 func demoSlidingCounter(userID string) {
 	limit := int64(5)
+	window := 5 * time.Second
 
-	for i := 1; i <= 7; i++ {
-		allowed, _ := slidingCounterAllow(userID, limit, 3*time.Second)
-		fmt.Printf("Request %d: %t\n", i, allowed)
-		time.Sleep(400 * time.Millisecond)
+	fmt.Println("Phase 1: Send 4 requests quickly (build up previous window)")
+	startTime := time.Now()
+	for i := 1; i <= 4; i++ {
+		allowed, _ := slidingCounterAllow(userID, limit, window)
+		fmt.Printf("  Request %d: %t\n", i, allowed)
+		time.Sleep(100 * time.Millisecond)
+	}
+
+	fmt.Println("\nPhase 2: Wait to cross into next window...")
+	timeInCurrentWindow := time.Since(startTime.Truncate(window))
+	sleepTime := window - timeInCurrentWindow + window/2
+	fmt.Println(timeInCurrentWindow, sleepTime)
+	fmt.Printf("  Sleeping for %.2fs to reach 50%% into next window...\n", sleepTime.Seconds())
+	time.Sleep(sleepTime)
+
+	fmt.Println("\nPhase 3: Send requests in new window (sliding window effect)")
+	fmt.Println("  Previous window had 4 requests, so fewer will be allowed")
+	for i := 5; i <= 9; i++ {
+		allowed, _ := slidingCounterAllow(userID, limit, window)
+		fmt.Printf("  Request %d: %t\n", i, allowed)
+		time.Sleep(100 * time.Millisecond)
 	}
 
 	keys, _ := rdb.Keys(ctx, fmt.Sprintf("counter:%s:*", userID)).Result()
@@ -219,6 +243,7 @@ func demoTokenBucket(userID string) {
 	capacity := 5.0
 	rate := 1.0
 
+	// Test 7 requests
 	for i := 1; i <= 7; i++ {
 		allowed, _ := tokenBucketAllow(userID, capacity, rate)
 		fmt.Printf("Request %d: %t\n", i, allowed)
