@@ -304,10 +304,10 @@ Good for:
 
 | Algorithm | Complexity | Memory | Accuracy | Bursts | Production Ready |
 |-----------|-----------|--------|----------|--------|------------------|
-| Fixed Window | ⭐ Easy | Low | 50% | No | ❌ |
-| Sliding Log | ⭐⭐⭐ Hard | High | 100% | No | ✅ Critical only |
-| Sliding Counter | ⭐⭐ Medium | Low | 95% | No | ✅ Yes |
-| Token Bucket | ⭐⭐ Medium | Low | 95% | Yes | ✅ Best default |
+| Fixed Window | ⭐ Easy | Low | low | No | ❌ |
+| Sliding Log | ⭐⭐⭐ Hard | High | very high | No | ✅ Critical only |
+| Sliding Counter | ⭐⭐ Medium | Low | high | No | ✅ Yes |
+| Token Bucket | ⭐⭐ Medium | Low | high | Yes | ✅ Best default |
 
 ## Key Takeaways
 
